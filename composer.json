@@ -1,0 +1,22 @@
+{
+    "name": "gwsn/prismic",
+    "description": "Cache Wrapper",
+    "keywords": ["Cache", "Tools"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jurn Overmars",
+            "email": "jovermars@gwsn.nl"
+        }
+    ],
+    "require": {
+        "php": ">=7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Gwsn\\Prismic\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
