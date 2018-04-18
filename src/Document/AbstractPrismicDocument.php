@@ -1,22 +1,31 @@
 <?php
 namespace Gwsn\Prismic\Document;
 
-use Gwsn\Prismic\Prismic\ApiWrapper;
-use Gwsn\Prismic\Prismic\Predicates\Predicates;
-use Prismic\Api;
+use Gwsn\Prismic\Models\ApiWrapper;
+use Gwsn\Prismic\Models\Response;
+use Gwsn\Prismic\Models\Predicates\Predicates;
+
 
 
 abstract class AbstractPrismicDocument implements PrismicDocumentInterface
 {
 
     /** @var string $endpoint */
-    private $token = 'MC5XclRjMkNFQUFMSHNjYlhs.77-977-9Txw0Te-_vQBq77-977-977-9Pinvv707M--_vWDvv708VO-_ve-_vXfvv73vv70d77-9R--_ve-_vQ';
+    private $token = '';
 
     /** @var string $endpoint */
-    private $endpoint = 'https://elect.prismic.io';
+    private $endpoint = '';
 
     /** @var string $type */
     private $type = 'blog-post';
+
+    /**
+     * AbstractPrismicDocument constructor.
+     */
+    public function __construct()
+    {
+        // Void
+    }
 
     /**
      * @return string
@@ -78,9 +87,9 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
 
     /**
      * @param string $uid
-     * @return array
+     * @return Response
      */
-    function getDocumentByID(string $uid):array
+    function getDocumentByID(string $uid):Response
     {
         return $this->getDocument('document.id', $uid);
     }
@@ -88,9 +97,9 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
     /**
      * @param string $type
      * @param string $uid
-     * @return array
+     * @return Response
      */
-    function getDocumentByUID(string $uid, string $type = null):array
+    function getDocumentByUID(string $uid, string $type = null):Response
     {
         if($type === null && $this->getType() === null) {
             throw new \InvalidArgumentException('The type provide is not valid type, also the default type is not set or not valid');
@@ -106,9 +115,9 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param int|null $limit
      * @param int|null $page
      * @param array|null $order
-     * @return array
+     * @return Response
      */
-    function getDocumentByType(string $type, int $limit = null, int $page = null, array $order = null):array
+    function getDocumentByType(string $type, int $limit = null, int $page = null, array $order = null):Response
     {
         return $this->getDocument('document.type', $type, $limit, $page, $order);
     }
@@ -116,9 +125,9 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
     /**
      * @param string $type
      * @param string $slug
-     * @return array
+     * @return Response
      */
-    function getDocumentBySlug(string $slug, string $type = null):array
+    function getDocumentBySlug(string $slug, string $type = null):Response
     {
         return $this->getDocumentByUID($slug, $type);
     }
@@ -128,9 +137,9 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param int|null $limit
      * @param int|null $page
      * @param array|null $order
-     * @return array
+     * @return Response
      */
-    function getDocumentByTag(string $tag, int $limit = null, int $page = null, array $order = null):array
+    function getDocumentByTag(string $tag, int $limit = null, int $page = null, array $order = null):Response
     {
         return $this->getDocument('document.tags', $tag, $limit, $page, $order);
     }
@@ -141,9 +150,9 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param int|null $limit
      * @param int|null $page
      * @param array|null $order
-     * @return array
+     * @return Response
      */
-    function getDocument(string $type, string $param, int $limit = null, int $page = null, array $order = null):array
+    function getDocument(string $type, string $param, int $limit = null, int $page = null, array $order = null):Response
     {
 
         $filtering = [];
@@ -164,33 +173,19 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
             $api = new ApiWrapper();
             $api->prepare($this->getEndpoint(), $this->getToken());
 
-            // full url: https://elect.prismic.io/api/v2/documents/search;
+            // full url: https://{repo}.prismic.io/api/v2/documents/search;
             $url =  '/api/v2/documents/search';
 
             $response = $api->call("GET", $url, ['q' => Predicates::at($type, $param)]);
 
+            return new Response((array) $response);
+
 
         } catch( \RuntimeException $exception) {
-            return [];
+            return new Response();
         }
-
-        if(empty($response['results_size']) || $response['results_size'] === 0) {
-            return [];
-        }
-
-        $documents = $response['results'];
-
-        return $documents;
     }
 
-    /**
-     * @param \Prismic\Api $api
-     * @return bool
-     */
-    function validateApi(Api $api): bool
-    {
-        return true;
-    }
 
     /**
      * @param string $token
