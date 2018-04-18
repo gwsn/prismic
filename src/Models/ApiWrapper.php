@@ -1,5 +1,5 @@
 <?php
-namespace Gwsn\Prismic\Prismic;
+namespace Gwsn\Prismic\Models;
 
 use function GuzzleHttp\Psr7\build_query;
 use Gwsn\HttpRequest\BaseConnector;

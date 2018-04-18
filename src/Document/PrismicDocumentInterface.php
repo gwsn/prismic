@@ -1,6 +1,7 @@
 <?php
 namespace Gwsn\Prismic\Document;
 
+use Gwsn\Prismic\Models\Response;
 
 interface PrismicDocumentInterface
 {
@@ -19,17 +20,17 @@ interface PrismicDocumentInterface
 
 
 
-    function getDocumentByID(string $id):array;
+    function getDocumentByID(string $id):Response;
 
-    function getDocumentByUID(string $uid, string $type):array;
+    function getDocumentByUID(string $uid, string $type):Response;
 
-    function getDocumentByType(string $type, int $limit, int $page, array $order):array;
+    function getDocumentByType(string $type, int $limit, int $page, array $order):Response;
 
-    function getDocumentBySlug(string $slug, string $type):array;
+    function getDocumentBySlug(string $slug, string $type):Response;
 
-    function getDocumentByTag(string $tag, int $limit, int $page, array $order):array;
+    function getDocumentByTag(string $tag, int $limit, int $page, array $order):Response;
 
-    function getDocument(string $type, string $param, int $limit, int $page, array $order):array;
+    function getDocument(string $type, string $param, int $limit, int $page, array $order):Response;
 
 
     function validateToken(string $token):bool;

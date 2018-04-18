@@ -1,5 +1,5 @@
 <?php
-namespace Gwsn\Prismic\Prismic\Predicates;
+namespace Gwsn\Prismic\Models\Predicates;
 
 
 /**
