@@ -11,7 +11,9 @@
         }
     ],
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "gwsn/http-request": "@stable",
+        "gwsn/transformer": "@stable"
     },
     "autoload": {
         "psr-4": {
