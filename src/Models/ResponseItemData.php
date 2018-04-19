@@ -70,7 +70,7 @@ class ResponseItemData extends BaseMapping
             'lang' => 'lang',
             'firstPublicationDate' => ['first_publication_date', 'callbackDateTime'],
             'lastPublicationDate' => ['last_publication_date', 'callbackDateTime'],
-            'data' => ['data', 'callbackParsePrismicData'],
+            'data' => ['data', 'callbackParsePrismicDataParts'],
             'custom' => ['data', 'callbackCustomData'],
         ];
     }
@@ -114,11 +114,27 @@ class ResponseItemData extends BaseMapping
      * @param $raw
      * @return array|null
      */
-    public function callbackParsePrismicData($value, $raw)
+    public function callbackParsePrismicDataParts($value, $raw)
     {
 
         if (!empty($value)) {
             return Fragment::parseFragments($value);
+        }
+        return null;
+    }
+
+    /**
+     * Parse the data (html content and links)
+     *
+     * @param $value
+     * @param $raw
+     * @return array|null
+     */
+    public function callbackParsePrismicDataPart($value, $raw)
+    {
+
+        if (!empty($value)) {
+            return Fragment::parseFragments([0 => $value]);
         }
         return null;
     }
