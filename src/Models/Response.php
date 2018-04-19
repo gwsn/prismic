@@ -1,6 +1,7 @@
 <?php
 
 namespace Gwsn\Prismic\Models;
+use Gwsn\Transformer\Mapping\MappingInterface;
 
 /**
  * Class Response
@@ -34,11 +35,14 @@ class Response
      * Constructs a Response object.
      *
      * @param $response
+     * @param MappingInterface $responseItemHandler
      */
-    public function __construct(array $response = [])
+    public function __construct(array $response = [], MappingInterface $responseItemHandler = null)
     {
+        $responseItemHandler = ($responseItemHandler !== null ? $responseItemHandler : new ResponseItemData);
+
         if (!empty($response)) {
-            $this->parseResponse($response);
+            $this->parseResponse($response, $responseItemHandler);
         }
     }
 
@@ -123,13 +127,15 @@ class Response
     }
 
     /**
-     *
      * @param array $response
+     * @param MappingInterface $responseItemHandler
+     *
      * @todo migrate to a transfomer object
      * @return Response
      */
-    public function parseResponse(array $response)
+    public function parseResponse(array $response, MappingInterface $responseItemHandler)
     {
+        $responseItemHandler = ($responseItemHandler !== null ? $responseItemHandler : new ResponseItemData);
 
         $this->page = (!empty($response['page']) ? intval($response['page']) : 0);
         $this->resultsPerPage = (!empty($response['results_per_page']) ? intval($response['results_per_page']) : 0);
@@ -143,7 +149,7 @@ class Response
         $this->license = $response['license'];
 
 
-        $responseItems = new ResponseItem();
+        $responseItems = new ResponseItem($responseItemHandler);
         $responseItems->setItems($response['results']);
 
 

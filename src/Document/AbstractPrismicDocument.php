@@ -4,7 +4,8 @@ namespace Gwsn\Prismic\Document;
 use Gwsn\Prismic\Models\ApiWrapper;
 use Gwsn\Prismic\Models\Response;
 use Gwsn\Prismic\Models\Predicates\Predicates;
-
+use Gwsn\Prismic\Models\ResponseItemData;
+use Gwsn\Transformer\Mapping\MappingInterface;
 
 
 abstract class AbstractPrismicDocument implements PrismicDocumentInterface
@@ -19,12 +20,17 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
     /** @var string $type */
     private $type = 'blog-post';
 
+    /** @var MappingInterface  responseItemHandler */
+    private $responseItemHandler;
+
     /**
      * AbstractPrismicDocument constructor.
+     *
+     * @param MappingInterface $responseItemHandler
      */
-    public function __construct()
+    public function __construct(MappingInterface $responseItemHandler = null)
     {
-        // Void
+        $this->responseItemHandler = ($responseItemHandler !== null ? $responseItemHandler : new ResponseItemData);
     }
 
     /**
@@ -179,12 +185,20 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
 
             $response = $api->call("GET", $url, $filtering);
 
-            return new Response((array) $response);
+            return $this->parseResponse($response);
 
 
         } catch( \RuntimeException $exception) {
             return new Response();
         }
+    }
+
+    /**
+     * @param $response
+     * @return Response
+     */
+    function parseResponse(Array $response = []) {
+        return new Response((array) $response, $this->responseItemHandler);
     }
 
 

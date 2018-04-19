@@ -1,6 +1,7 @@
 <?php
 namespace Gwsn\Prismic\Models;
 
+use Gwsn\Transformer\Mapping\MappingInterface;
 use Gwsn\Transformer\Transformer;
 
 /**
@@ -15,6 +16,16 @@ class ResponseItem
     public $items = null;
 
     /**
+     * @var MappingInterface $items
+     */
+    public $responseItemHandler = null;
+
+    public function __construct(MappingInterface $responseItemHandler)
+    {
+        $this->responseItemHandler = $responseItemHandler;
+    }
+
+    /**
      * @return array
      */
     public function getItems(): array
@@ -27,7 +38,7 @@ class ResponseItem
      */
     public function setItems(array $items): void
     {
-        $this->items = Transformer::run($items, new ResponseItemData(), new ResponseItemData());
+        $this->items = Transformer::run($items, $this->responseItemHandler, $this->responseItemHandler);
     }
 
 

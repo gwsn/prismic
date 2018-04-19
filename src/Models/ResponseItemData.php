@@ -53,6 +53,11 @@ class ResponseItemData extends BaseMapping
     /** @var array $custom */
     public $custom;
 
+    /**
+     * Return the default transformer.
+     *
+     * @return array
+     */
     public function getMapping(): array
     {
         return [
@@ -70,6 +75,13 @@ class ResponseItemData extends BaseMapping
         ];
     }
 
+    /**
+     * Get the first slug
+     *
+     * @param $value
+     * @param $raw
+     * @return string
+     */
     public function callbackSlug($value, $raw)
     {
         if (is_array($value) && !empty($value)) {
@@ -78,6 +90,14 @@ class ResponseItemData extends BaseMapping
         return '';
     }
 
+    /**
+     * Parse the date time into a Date object
+     * @todo Parse the date
+     *
+     * @param $value
+     * @param $raw
+     * @return null
+     */
     public function callbackDateTime($value, $raw)
     {
 
@@ -87,6 +107,13 @@ class ResponseItemData extends BaseMapping
         return null;
     }
 
+    /**
+     * Parse the data (html content and links)
+     *
+     * @param $value
+     * @param $raw
+     * @return array|null
+     */
     public function callbackParsePrismicData($value, $raw)
     {
 
@@ -96,10 +123,17 @@ class ResponseItemData extends BaseMapping
         return null;
     }
 
+    /**
+     * Return all the values that are not default in Prismic
+     *
+     * @param $value
+     * @param $raw
+     * @return mixed
+     */
     public function callbackCustomData($value, $raw) {
-        $defaultKeys = ['id','slugs', 'type','href','tags','lang','first_publication_date','last_publication_date'];
+        $defaultKeys = ['id','slugs','data','type','href','tags','lang','alternate_languages','linked_documents','first_publication_date','last_publication_date'];
         foreach($raw as $key => $value) {
-            if(key_exists($key,$defaultKeys)) {
+            if(in_array($key, $defaultKeys)) {
                 unset($raw[$key]);
             }
         }
