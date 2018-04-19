@@ -175,8 +175,9 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
 
             // full url: https://{repo}.prismic.io/api/v2/documents/search;
             $url =  '/api/v2/documents/search';
+            $filtering['q'] = Predicates::at($type, $param);
 
-            $response = $api->call("GET", $url, ['q' => Predicates::at($type, $param)]);
+            $response = $api->call("GET", $url, $filtering);
 
             return new Response((array) $response);
 

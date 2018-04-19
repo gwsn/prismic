@@ -50,6 +50,9 @@ class ResponseItemData extends BaseMapping
     /** @var array $data */
     public $data;
 
+    /** @var array $custom */
+    public $custom;
+
     public function getMapping(): array
     {
         return [
@@ -63,6 +66,7 @@ class ResponseItemData extends BaseMapping
             'firstPublicationDate' => ['first_publication_date', 'callbackDateTime'],
             'lastPublicationDate' => ['last_publication_date', 'callbackDateTime'],
             'data' => ['data', 'callbackParsePrismicData'],
+            'custom' => ['data', 'callbackCustomData'],
         ];
     }
 
@@ -90,6 +94,16 @@ class ResponseItemData extends BaseMapping
             return Fragment::parseFragments($value);
         }
         return null;
+    }
+
+    public function callbackCustomData($value, $raw) {
+        $defaultKeys = ['id','slugs', 'type','href','tags','lang','first_publication_date','last_publication_date'];
+        foreach($raw as $key => $value) {
+            if(key_exists($key,$defaultKeys)) {
+                unset($raw[$key]);
+            }
+        }
+        return $raw;
     }
 
     /**
@@ -299,6 +313,24 @@ class ResponseItemData extends BaseMapping
     {
         $this->data = $data;
     }
+
+    /**
+     * @return array
+     */
+    public function getCustom(): array
+    {
+        return $this->custom;
+    }
+
+    /**
+     * @param array $custom
+     */
+    public function setCustom(array $custom)
+    {
+        $this->custom = $custom;
+    }
+
+
 
 
 }

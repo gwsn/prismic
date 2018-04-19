@@ -28,8 +28,6 @@ class ResponseItem
     public function setItems(array $items): void
     {
         $this->items = Transformer::run($items, new ResponseItemData(), new ResponseItemData());
-        echo '<pre>';
-        var_dump($this->items);die();
     }
 
 
