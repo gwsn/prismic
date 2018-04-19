@@ -163,11 +163,11 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
 
         $filtering = [];
 
-        if($limit > 0) {
+        if($limit !== null && intval($limit) > 0) {
             $filtering['pageSize'] = $limit;
         }
 
-        if($page >= 0) {
+        if($page !== null && intval($page) >= 0) {
             $filtering['page'] = $page;
         }
 
