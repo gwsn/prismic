@@ -209,7 +209,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
                 $queryData[] = Predicates::at($q['type'], $q['value']);
             }
 
-            $filtering['q'] = implode($queryData, ' ');
+            $filtering['q'] = $queryData;
 
             $response = $api->call("GET", $url, $filtering);
 
@@ -221,6 +221,12 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
         }
     }
 
+    /**
+     * @param int $limit
+     * @param int $page
+     * @param array $order
+     * @return array
+     */
     private function buildFilters(int $limit = 25, int $page = 1, array $order = []):array {
         $filtering = [];
 
