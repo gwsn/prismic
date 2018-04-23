@@ -32,6 +32,10 @@ interface PrismicDocumentInterface
 
     function getDocument(string $type, string $param, int $limit, int $page, array $order):Response;
 
+    function queryDocuments(array $query, int $limit, int $page, array $order):Response;
+
+
+    function parseResponse(array $response):Response;
 
     function validateToken(string $token):bool;
 

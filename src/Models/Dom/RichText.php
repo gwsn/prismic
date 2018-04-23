@@ -46,10 +46,20 @@ class RichText
     {
         $groups = [];
 
+        if(is_array($richText) && key_exists('dimensions', $richText)) {
+            return self::asImageBlock($richText);
+        }
 
         foreach ($richText as $block) {
             $block = (object) $block;
             $count = count($groups);
+
+            // Check if block is image
+            if(empty($block->type)) {
+                var_dump($richText);
+                die();
+            }
+
             if ($count > 0) {
                 $lastOne = $groups[$count - 1];
                 if ('ul' == $lastOne->getTag() && $block->type === 'list-item') {
@@ -101,6 +111,28 @@ class RichText
         }
         return $html;
     }
+
+    /**
+     * @param array $richText
+     *
+     * @return string
+     */
+    private static function asImageBlock(array $richText) {
+
+        // Check if the value is a image object:
+        foreach(['dimensions', 'alt','url'] as $key) {
+            if(!key_exists($key, $richText)) return '';
+        }
+
+        $alt = (!empty($richText['alt']) ? ' alt="'.$richText['alt'].'"' : '');
+        $width = (!empty($richText['dimensions']['width']) ? ' width="'.$richText['dimensions']['width'].'"' : '');
+        $height = (!empty($richText['dimensions']['height']) ? ' height="'.$richText['dimensions']['height'].'"' : '');
+
+
+        return '<img src="'.$richText['url'].'" '.$alt.$width.$height.' />';
+
+    }
+
     /**
      * Transforms a block into HTML
      *
@@ -129,6 +161,7 @@ class RichText
         }
         return RichText::serialize((object)$block, $content, $linkResolver, $htmlSerializer);
     }
+
     /**
      * Transforms a text block into HTML
      *

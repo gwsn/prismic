@@ -95,8 +95,11 @@ class ApiWrapper
     public function prepare($endpoint, $token) {
 
         $this->setEndpoint($endpoint);
-
         $this->setToken($token);
+
+        if(empty($this->getEndpoint()) || empty($this->getToken())) {
+            throw new \RuntimeException('Please provide the correct credentials to connect to the API');
+        }
 
         // Prepare the Call
         $this->setClient(new BaseConnector());

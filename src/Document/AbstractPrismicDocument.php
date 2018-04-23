@@ -95,7 +95,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param string $uid
      * @return Response
      */
-    function getDocumentByID(string $uid):Response
+    public function getDocumentByID(string $uid):Response
     {
         return $this->getDocument('document.id', $uid);
     }
@@ -105,7 +105,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param string $uid
      * @return Response
      */
-    function getDocumentByUID(string $uid, string $type = null):Response
+    public function getDocumentByUID(string $uid, string $type = null):Response
     {
         if($type === null && $this->getType() === null) {
             throw new \InvalidArgumentException('The type provide is not valid type, also the default type is not set or not valid');
@@ -123,7 +123,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param array|null $order
      * @return Response
      */
-    function getDocumentByType(string $type, int $limit = null, int $page = null, array $order = null):Response
+    public function getDocumentByType(string $type, int $limit = 25, int $page = 1, array $order = []):Response
     {
         return $this->getDocument('document.type', $type, $limit, $page, $order);
     }
@@ -133,7 +133,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param string $slug
      * @return Response
      */
-    function getDocumentBySlug(string $slug, string $type = null):Response
+    public function getDocumentBySlug(string $slug, string $type = null):Response
     {
         return $this->getDocumentByUID($slug, $type);
     }
@@ -145,7 +145,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param array|null $order
      * @return Response
      */
-    function getDocumentByTag(string $tag, int $limit = null, int $page = null, array $order = null):Response
+    public function getDocumentByTag(string $tag, int $limit = 25, int $page = 1, array $order = []):Response
     {
         return $this->getDocument('document.tags', $tag, $limit, $page, $order);
     }
@@ -158,25 +158,14 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param array|null $order
      * @return Response
      */
-    function getDocument(string $type, string $param, int $limit = null, int $page = null, array $order = null):Response
+    public function getDocument(string $type, string $param, int $limit = 25, int $page = 1, array $order = []):Response
     {
 
-        $filtering = [];
-
-        if($limit !== null && intval($limit) > 0) {
-            $filtering['pageSize'] = $limit;
-        }
-
-        if($page !== null && intval($page) >= 0) {
-            $filtering['page'] = $page;
-        }
-
-        if(is_array($order) && !empty($order)) {
-            $filtering['ordering'] = $order;
-        }
+        $filtering = $this->buildFilters($limit, $page, $order);
 
         try {
             $api = new ApiWrapper();
+
             $api->prepare($this->getEndpoint(), $this->getToken());
 
             // full url: https://{repo}.prismic.io/api/v2/documents/search;
@@ -194,10 +183,68 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
     }
 
     /**
+     *
+     * @param array $query
+     * @param int $limit
+     * @param int $page
+     * @param array $order
+     *
+     * @return Response
+     */
+    public function queryDocuments(array $query, int $limit = 25, int $page = 1, array $order = []):Response
+    {
+        if(empty($query)) {
+            throw new \InvalidArgumentException('Query is not valid');
+        }
+        $filtering = $this->buildFilters($limit, $page, $order);
+        $queryData = [];
+
+        try {
+            $api = new ApiWrapper();
+            $api->prepare($this->getEndpoint(), $this->getToken());
+
+            // full url: https://{repo}.prismic.io/api/v2/documents/search;
+            $url =  '/api/v2/documents/search';
+            foreach($query as $k => $q) {
+                $queryData[] = Predicates::at($q['type'], $q['value']);
+            }
+
+            $filtering['q'] = implode($queryData, ' ');
+
+            $response = $api->call("GET", $url, $filtering);
+
+            return $this->parseResponse($response);
+
+
+        } catch( \RuntimeException $exception) {
+            return new Response();
+        }
+    }
+
+    private function buildFilters(int $limit = 25, int $page = 1, array $order = []):array {
+        $filtering = [];
+
+        if($limit !== null && intval($limit) > 0) {
+            $filtering['pageSize'] = $limit;
+        }
+
+        if($page !== null && intval($page) >= 0) {
+            $filtering['page'] = $page;
+        }
+
+        if(is_array($order) && !empty($order)) {
+            $filtering['ordering'] = $order;
+        }
+
+        return $filtering;
+    }
+
+    /**
      * @param $response
      * @return Response
      */
-    function parseResponse(Array $response = []) {
+    public function parseResponse(array $response = []):Response
+    {
         return new Response((array) $response, $this->responseItemHandler);
     }
 
@@ -206,7 +253,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param string $token
      * @return bool
      */
-    function validateToken(string $token): bool
+    public function validateToken(string $token): bool
     {
         return true;
     }
@@ -215,7 +262,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param string $endpoint
      * @return bool
      */
-    function validateEndpoint(string $endpoint): bool
+    public function validateEndpoint(string $endpoint): bool
     {
         return true;
     }
@@ -224,7 +271,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param string $type
      * @return bool
      */
-    function validateType(string $type): bool
+    public function validateType(string $type): bool
     {
         return true;
     }
@@ -233,7 +280,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param array $order
      * @return bool
      */
-    function validateOrder(array $order): bool
+    public function validateOrder(array $order): bool
     {
         return true;
     }
@@ -242,7 +289,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param int $page
      * @return bool
      */
-    function validatePage(int $page): bool
+    public function validatePage(int $page): bool
     {
         return true;
     }
@@ -251,7 +298,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
      * @param int $limit
      * @return bool
      */
-    function validateLimit(int $limit): bool
+    public function validateLimit(int $limit): bool
     {
         return true;
     }
