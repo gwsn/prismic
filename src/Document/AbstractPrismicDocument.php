@@ -239,10 +239,19 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
         }
 
         if(is_array($order) && !empty($order)) {
-            $filtering['ordering'] = $order;
+            $filtering['ordering'] = $this->buildOrdering($order);
         }
 
         return $filtering;
+    }
+
+    /**
+     * @param array $ordering
+     *
+     * @return string
+     */
+    private function buildOrdering(array $ordering = []):string {
+        return '['.implode(',', $ordering).']';
     }
 
     /**
