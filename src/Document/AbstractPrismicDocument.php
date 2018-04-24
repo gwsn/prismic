@@ -111,7 +111,7 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
             throw new \InvalidArgumentException('The type provide is not valid type, also the default type is not set or not valid');
         }
 
-        $type = ($this->getType() !== null ? $this->getType() : '');
+        $type = ($this->getType() !== null && $type === null? $this->getType() : $type);
 
         return $this->getDocument("my.{$type}.uid", $uid);
     }
@@ -175,8 +175,6 @@ abstract class AbstractPrismicDocument implements PrismicDocumentInterface
             $response = $api->call("GET", $url, $filtering);
 
             return $this->parseResponse($response);
-
-
         } catch( \RuntimeException $exception) {
             return new Response();
         }
