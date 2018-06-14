@@ -114,8 +114,8 @@ class ApiWrapper
 
 
 
-        if(!empty($response)) {
-            if(empty($response['refs'][0])) {
+        if(!empty($response) && is_array($response)) {
+            if(!key_exists('refs', $response) || !key_exists(0, $response['refs'])) {
                 throw new \RuntimeException('Cannot fetch the correct master ref form the Prismic API');
             }
             $ref = $response['refs'][0];
