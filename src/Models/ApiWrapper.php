@@ -104,19 +104,18 @@ class ApiWrapper
         // Prepare the Call
         $this->setClient(new BaseConnector());
 
+        // Set the Base API URL
         $this->client->setBaseUri($this->getEndpoint());
 
-
+        // Prepare call
         $this->client->prepareCall(null);
 
         // Get the master ref
         $response = $this->call("GET", '/api/v2');
 
-
-
         if(!empty($response) && is_array($response)) {
             if(!key_exists('refs', $response) || !key_exists(0, $response['refs'])) {
-                throw new \RuntimeException('Cannot fetch the correct master ref form the Prismic API');
+                throw new \RuntimeException('Cannot fetch the correct master ref form the Prismic API, bad response:'.json_encode($response));
             }
             $ref = $response['refs'][0];
 
@@ -125,7 +124,7 @@ class ApiWrapper
             }
 
         } else {
-            throw new \RuntimeException('Cannot fetch the correct master ref form the Prismic API');
+            throw new \RuntimeException('Cannot fetch the correct master ref form the Prismic API, bad response:'.json_encode($response));
         }
     }
 
